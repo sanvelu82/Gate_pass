@@ -1,0 +1,231 @@
+.result-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.4s, box-shadow 0.4s;
+}
+
+.result-panel.state-verified {
+  border-color: rgba(0, 230, 118, 0.3);
+  box-shadow: var(--shadow-glow-green);
+}
+
+.result-panel.state-error {
+  border-color: rgba(255, 23, 68, 0.3);
+  box-shadow: var(--shadow-glow-red);
+}
+
+.result-panel.state-already {
+  border-color: rgba(255, 193, 7, 0.3);
+  box-shadow: 0 0 40px rgba(255, 193, 7, 0.15);
+}
+
+/* Idle */
+.result-idle {
+  text-align: center;
+}
+
+.idle-icon {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 1.5rem;
+  animation: gentleSpin 8s linear infinite;
+}
+
+.result-idle h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.result-idle p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* Verified */
+.result-verified {
+  width: 100%;
+  animation: slideIn 0.4s ease-out;
+}
+
+.verified-badge, .error-badge, .already-badge {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.verified-badge span {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: 3px;
+  background: var(--gradient-success);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.error-badge span {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: 3px;
+  background: var(--gradient-error);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.already-badge span {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 3px;
+  background: var(--gradient-warning);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.check-ring, .error-ring, .already-ring {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+}
+
+.check-circle {
+  stroke-dasharray: 150;
+  stroke-dashoffset: 150;
+  animation: drawCircle 0.6s ease-out forwards;
+}
+
+.check-path {
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: drawCheck 0.4s 0.4s ease-out forwards;
+}
+
+/* Student card */
+.student-card {
+  display: flex;
+  gap: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.student-photo-wrap {
+  width: 120px;
+  height: 140px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid var(--border-glow);
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+.student-photo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.student-info {
+  flex: 1;
+}
+
+.student-info h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.welcome-message {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(0, 230, 118, 0.08), rgba(0, 176, 255, 0.08));
+  border: 1px solid rgba(0, 230, 118, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--accent-green);
+}
+
+/* Error */
+.result-error, .result-already {
+  width: 100%;
+  animation: slideIn 0.4s ease-out;
+}
+
+.error-text {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  padding: 1rem;
+  background: rgba(255, 23, 68, 0.06);
+  border: 1px solid rgba(255, 23, 68, 0.15);
+  border-radius: var(--radius-md);
+}
+
+.already-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 0.75rem;
+  background: rgba(255, 193, 7, 0.06);
+  border: 1px solid rgba(255, 193, 7, 0.15);
+  border-radius: var(--radius-md);
+}
+
+@media (max-width: 480px) {
+  .student-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .info-row {
+    flex-direction: column;
+    gap: 0.15rem;
+    text-align: center;
+  }
+
+  .verified-badge span,
+  .error-badge span {
+    font-size: 1.3rem;
+  }
+}
