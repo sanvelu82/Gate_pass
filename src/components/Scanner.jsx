@@ -1,39 +1,60 @@
 import { useEffect, useRef, useState } from 'react';
-import { Html5Qrcode } from 'html5-qrcode';
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 import './Scanner.css';
 
 export default function Scanner({ onScan }) {
-  const scannerRef = useRef(null);
   const html5QrRef = useRef(null);
   const [manualInput, setManualInput] = useState('');
   const [cameraError, setCameraError] = useState(false);
+  const [scannerReady, setScannerReady] = useState(false);
 
   useEffect(() => {
     let mounted = true;
+    let html5QrCode = null;
 
     async function startScanner() {
-      try {
-        const html5QrCode = new Html5Qrcode('qr-reader');
-        html5QrRef.current = html5QrCode;
+      // Small delay to ensure DOM element is mounted
+      await new Promise(r => setTimeout(r, 300));
 
-        const config = {
-          fps: 15,
-          qrbox: { width: 280, height: 180 },
-          aspectRatio: 1.333,
-          disableFlip: false,
-          formatsToSupport: [0, 2, 3, 7, 8, 11, 13], // QR, CODE_128, CODE_39, EAN_13, EAN_8, ITF, CODABAR
-        };
+      if (!mounted) return;
+
+      const el = document.getElementById('qr-reader');
+      if (!el) {
+        console.warn('Scanner element not found');
+        setCameraError(true);
+        return;
+      }
+
+      try {
+        html5QrCode = new Html5Qrcode('qr-reader', {
+          formatsToSupport: [
+            Html5QrcodeSupportedFormats.QR_CODE,
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.CODE_39,
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.EAN_8,
+          ],
+          verbose: false,
+        });
+        html5QrRef.current = html5QrCode;
 
         await html5QrCode.start(
           { facingMode: 'environment' },
-          config,
+          {
+            fps: 15,
+            qrbox: { width: 280, height: 180 },
+            aspectRatio: 1.333,
+            disableFlip: false,
+          },
           (decodedText) => {
             if (mounted) onScan(decodedText);
           },
           () => {} // silence no-code frames
         );
+
+        if (mounted) setScannerReady(true);
       } catch (err) {
-        console.warn('Camera error:', err);
+        console.warn('Camera init error:', err);
         if (mounted) setCameraError(true);
       }
     }
@@ -42,11 +63,12 @@ export default function Scanner({ onScan }) {
 
     return () => {
       mounted = false;
-      if (html5QrRef.current) {
-        html5QrRef.current.stop().catch(() => {});
+      if (html5QrCode) {
+        html5QrCode.stop().catch(() => {});
+        html5QrCode.clear();
       }
     };
-  }, [onScan]);
+  }, []); // Only run once on mount — onScan is stable via useCallback
 
   const handleManualVerify = () => {
     const val = manualInput.trim();
@@ -63,30 +85,33 @@ export default function Scanner({ onScan }) {
   return (
     <section className="scanner-panel">
       <div className="panel-header">
-        <div className="pulse-dot"></div>
+        <div className={`pulse-dot ${scannerReady ? '' : 'inactive'}`}></div>
         <h2>Barcode Scanner</h2>
       </div>
 
       <div className="scanner-wrapper">
-        <div id="qr-reader" ref={scannerRef} className="qr-reader">
-          {cameraError && (
-            <div className="camera-fallback">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="1.5">
-                <rect x="2" y="2" width="20" height="20" rx="2"/>
-                <line x1="2" y1="2" x2="22" y2="22"/>
-              </svg>
-              <p>Camera not available</p>
-              <p className="camera-hint">Use manual entry below or allow camera permission</p>
-            </div>
-          )}
-        </div>
-        <div className="scanner-overlay">
-          <div className="scan-line"></div>
-          <div className="corner tl"></div>
-          <div className="corner tr"></div>
-          <div className="corner bl"></div>
-          <div className="corner br"></div>
-        </div>
+        <div id="qr-reader" className="qr-reader"></div>
+
+        {cameraError && (
+          <div className="camera-fallback-overlay">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="1.5">
+              <rect x="2" y="2" width="20" height="20" rx="2"/>
+              <line x1="2" y1="2" x2="22" y2="22"/>
+            </svg>
+            <p>Camera not available</p>
+            <p className="camera-hint">Use manual entry below or allow camera permission</p>
+          </div>
+        )}
+
+        {!cameraError && (
+          <div className="scanner-overlay">
+            <div className="scan-line"></div>
+            <div className="corner tl"></div>
+            <div className="corner tr"></div>
+            <div className="corner bl"></div>
+            <div className="corner br"></div>
+          </div>
+        )}
       </div>
 
       <div className="scanner-hint">
